@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		8B1A00072F50A00100000007 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BD582292F45960F00981A6F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BD582302F45960F00981A6F;
+			remoteInfo = "Photo Gallery";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		8B1A00012F50A00100000001 /* Photo GalleryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Photo GalleryTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BD582312F45960F00981A6F /* Photo Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8B1A00032F50A00100000003 /* Photo GalleryTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Photo GalleryTests";
+			sourceTree = "<group>";
+		};
 		8BD582332F45960F00981A6F /* Photo Gallery */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +48,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8B1A00052F50A00100000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BD5822E2F45960F00981A6F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				8BD582332F45960F00981A6F /* Photo Gallery */,
+				8B1A00032F50A00100000003 /* Photo GalleryTests */,
 				8BD582322F45960F00981A6F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				8BD582312F45960F00981A6F /* Photo Gallery.app */,
+				8B1A00012F50A00100000001 /* Photo GalleryTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,10 +86,34 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8B1A00022F50A00100000002 /* Photo GalleryTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B1A000B2F50A0010000000B /* Build configuration list for PBXNativeTarget "Photo GalleryTests" */;
+			buildPhases = (
+				8B1A00042F50A00100000004 /* Sources */,
+				8B1A00052F50A00100000005 /* Frameworks */,
+				8B1A00062F50A00100000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8B1A00082F50A00100000008 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8B1A00032F50A00100000003 /* Photo GalleryTests */,
+			);
+			name = "Photo GalleryTests";
+			packageProductDependencies = (
+			);
+			productName = "Photo GalleryTests";
+			productReference = 8B1A00012F50A00100000001 /* Photo GalleryTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		8BD582302F45960F00981A6F /* Photo Gallery */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8BD582442F45961000981A6F /* Build configuration list for PBXNativeTarget "Photo Gallery" */;
 			buildPhases = (
+				8B6A76E92F4E7DDC0090EB1B /* ShellScript */,
 				8BD5822D2F45960F00981A6F /* Sources */,
 				8BD5822E2F45960F00981A6F /* Frameworks */,
 				8BD5822F2F45960F00981A6F /* Resources */,
@@ -93,6 +142,10 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					8B1A00022F50A00100000002 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 8BD582302F45960F00981A6F;
+					};
 					8BD582302F45960F00981A6F = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -113,11 +166,19 @@
 			projectRoot = "";
 			targets = (
 				8BD582302F45960F00981A6F /* Photo Gallery */,
+				8B1A00022F50A00100000002 /* Photo GalleryTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8B1A00062F50A00100000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BD5822F2F45960F00981A6F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,7 +188,35 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		8B6A76E92F4E7DDC0090EB1B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint > /dev/null; then\n    cd \"${SRCROOT}\"\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		8B1A00042F50A00100000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BD5822D2F45960F00981A6F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,7 +226,55 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		8B1A00082F50A00100000008 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BD582302F45960F00981A6F /* Photo Gallery */;
+			targetProxy = 8B1A00072F50A00100000007 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		8B1A00092F50A00100000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P26AR95H66;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "test.Photo-GalleryTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photo Gallery.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Photo Gallery";
+			};
+			name = Debug;
+		};
+		8B1A000A2F50A0010000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P26AR95H66;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "test.Photo-GalleryTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photo Gallery.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Photo Gallery";
+			};
+			name = Release;
+		};
 		8BD582452F45961000981A6F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -246,7 +383,7 @@
 				DEVELOPMENT_TEAM = P26AR95H66;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -310,7 +447,7 @@
 				DEVELOPMENT_TEAM = P26AR95H66;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -332,6 +469,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8B1A000B2F50A0010000000B /* Build configuration list for PBXNativeTarget "Photo GalleryTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B1A00092F50A00100000009 /* Debug */,
+				8B1A000A2F50A0010000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		8BD5822C2F45960F00981A6F /* Build configuration list for PBXProject "Photo Gallery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
