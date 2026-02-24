@@ -4,7 +4,13 @@ An iOS image gallery app that fetches photos from the Unsplash API, displays the
 
 ## Contact
 
-**Nikita Harkavy** — [GitHub](https://github.com/NikitaHarkavy) · HarkavyNikita@gmail.com
+**Nikita Harkavy**
+
+- GitHub: [NikitaHarkavy](https://github.com/NikitaHarkavy)
+- Email: HarkavyNikita@gmail.com
+- Phone: +375 29 954-33-64
+- Telegram: [@nikkkisha1](https://t.me/nikkkisha1)
+- LinkedIn: [Nikita Harkavy](https://www.linkedin.com/in/nikita-harkavy-5b8040305)
 
 ## Overview
 
