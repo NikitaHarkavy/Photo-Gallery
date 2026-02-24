@@ -23,43 +23,112 @@ final class DetailPageViewController: UIPageViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private let favoriteIcon: UIImageView = {
+        let icon = UIImageView()
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.contentMode = .scaleAspectFit
+        icon.isUserInteractionEnabled = true
+        return icon
+    }()
+
+    private let backContainer: UIView = {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.layer.cornerRadius = 22
+        container.clipsToBounds = true
+
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
+        blur.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(blur)
+
+        let icon = UIImageView()
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.image = UIImage(systemName: "chevron.left",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold))
+        icon.tintColor = .white
+        icon.contentMode = .scaleAspectFit
+        container.addSubview(icon)
+
+        NSLayoutConstraint.activate([
+            blur.topAnchor.constraint(equalTo: container.topAnchor),
+            blur.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            blur.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            blur.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            icon.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            icon.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+
+        return container
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         dataSource = self
         delegate = self
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
 
         let initialVC = makeDetailContentVC(at: viewModel.currentIndex)
         setViewControllers([initialVC], direction: .forward, animated: false)
 
-        updateTitle(for: viewModel.currentIndex)
+        setupBackButton()
+        setupFavoriteButton()
+        updateFavoriteIcon()
+    }
+
+    private func setupBackButton() {
+        view.addSubview(backContainer)
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(backTapped))
+        backContainer.addGestureRecognizer(tap)
+
+        NSLayoutConstraint.activate([
+            backContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            backContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backContainer.widthAnchor.constraint(equalToConstant: 44),
+            backContainer.heightAnchor.constraint(equalToConstant: 44)
+        ])
+    }
+
+    @objc private func backTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func setupFavoriteButton() {
+        view.addSubview(favoriteIcon)
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(favoriteTapped))
+        favoriteIcon.addGestureRecognizer(tap)
+
+        NSLayoutConstraint.activate([
+            favoriteIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            favoriteIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+    }
+
+    private func updateFavoriteIcon() {
+        let item = viewModel.item(at: viewModel.currentIndex)
+        let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
+        let imageName = item.isFavorite ? "heart.fill" : "heart"
+        favoriteIcon.image = UIImage(systemName: imageName, withConfiguration: config)
+        favoriteIcon.tintColor = item.isFavorite ? .systemRed : .white
+    }
+
+    @objc private func favoriteTapped() {
+        viewModel.toggleFavorite(at: viewModel.currentIndex)
+        updateFavoriteIcon()
     }
 
     private func makeDetailContentVC(at index: Int) -> DetailContentViewController {
         let item = viewModel.item(at: index)
-        let contentVC = DetailContentViewController(
+        return DetailContentViewController(
             item: item,
             index: index,
             imageLoader: imageLoader
         )
-        contentVC.onFavoriteTapped = { [weak self] tappedIndex in
-            self?.viewModel.toggleFavorite(at: tappedIndex)
-
-            if let currentVC = self?.viewControllers?.first as? DetailContentViewController {
-                let updatedItem = self?.viewModel.item(at: tappedIndex)
-                if let updatedItem {
-                    currentVC.updateFavoriteState(isFavorite: updatedItem.isFavorite)
-                }
-            }
-        }
-        return contentVC
     }
 
-    private func updateTitle(for index: Int) {
-        title = "\(index + 1) / \(viewModel.numberOfPhotos)"
-    }
 }
 
 extension DetailPageViewController: UIPageViewControllerDataSource {
@@ -98,6 +167,6 @@ extension DetailPageViewController: UIPageViewControllerDelegate {
             return
         }
         viewModel.updateCurrentIndex(currentVC.index)
-        updateTitle(for: currentVC.index)
+        updateFavoriteIcon()
     }
 }

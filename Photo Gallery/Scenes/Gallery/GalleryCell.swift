@@ -91,10 +91,10 @@ final class GalleryCell: UICollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
-            favoriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
-            favoriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
-            favoriteIcon.widthAnchor.constraint(equalToConstant: 20),
-            favoriteIcon.heightAnchor.constraint(equalToConstant: 18)
+            favoriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            favoriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            favoriteIcon.widthAnchor.constraint(equalToConstant: 28),
+            favoriteIcon.heightAnchor.constraint(equalToConstant: 25)
         ])
     }
 }

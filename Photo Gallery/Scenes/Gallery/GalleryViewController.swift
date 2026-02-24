@@ -79,6 +79,11 @@ final class GalleryViewController: UIViewController {
         }
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
     // MARK: - Setup
 
     private func setupUI() {
@@ -112,12 +117,15 @@ final class GalleryViewController: UIViewController {
 
     private func createLayout() -> UICollectionViewCompositionalLayout {
         UICollectionViewCompositionalLayout { _, environment in
-            let columns = environment.container.contentSize.width > 500 ? 3 : 2
+            let width = environment.container.contentSize.width
+            let targetCellWidth: CGFloat = 190
+            let columns = max(2, Int(width / targetCellWidth))
             let spacing: CGFloat = 2
+            let fraction = 1.0 / CGFloat(columns)
 
             let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
-                heightDimension: .fractionalWidth(1.0 / CGFloat(columns))
+                widthDimension: .fractionalWidth(fraction),
+                heightDimension: .fractionalWidth(fraction)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             item.contentInsets = NSDirectionalEdgeInsets(
@@ -129,14 +137,16 @@ final class GalleryViewController: UIViewController {
 
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalWidth(1.0 / CGFloat(columns))
+                heightDimension: .fractionalWidth(fraction)
             )
             let group = NSCollectionLayoutGroup.horizontal(
                 layoutSize: groupSize,
                 subitems: [item]
             )
 
-            return NSCollectionLayoutSection(group: group)
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsetsReference = .none
+            return section
         }
     }
 

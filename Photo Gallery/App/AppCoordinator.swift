@@ -64,7 +64,9 @@ final class AppCoordinator {
             viewModel: detailVM,
             imageLoader: imageLoader
         )
+        detailPageVC.hidesBottomBarWhenPushed = true
 
         navigationController.pushViewController(detailPageVC, animated: true)
+        navigationController.setNavigationBarHidden(true, animated: true)
     }
 }
