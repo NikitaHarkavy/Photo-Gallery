@@ -4,145 +4,57 @@ An iOS image gallery app that fetches photos from the Unsplash API, displays the
 
 ## Contact
 
-**Nikita Harkavy**
-- Email: nikita.harkavy@appshero.io
-- GitHub: [github.com/nikitaharkavy](https://github.com/nikitaharkavy)
+**Nikita Harkavy** — [GitHub](https://github.com/NikitaHarkavy) · HarkavyNikita@gmail.com
 
-## Project Overview
+## Overview
 
-Photo Gallery is a native iOS application built entirely with UIKit and programmatic UI (no storyboards). The app demonstrates proficiency in networking, asynchronous programming, data persistence, and modern iOS architecture patterns.
+- Adaptive grid gallery with infinite scroll pagination (30 photos per page)
+- Detail screen with full-size image, title, author, description, and a draggable bottom sheet
+- Swipe navigation between photos via `UIPageViewController`
+- Favorites with local persistence and visual indicators on thumbnails
+- In-memory image caching (`NSCache`) for smooth scrolling
+- Dark theme with blur effects
 
-### Key Functionalities
+### Additional Features
 
-- **Adaptive Grid Gallery** — a responsive collection view that automatically calculates the number of columns based on screen width (target cell width of 190pt, minimum 2 columns), ensuring optimal layout across all device sizes and orientations.
-- **Infinite Scroll Pagination** — seamlessly loads 30 images per page as the user scrolls, with a prefetch threshold of 2x the screen height for a smooth experience.
-- **Interactive Detail View** — full-screen image display with a draggable bottom sheet panel featuring two states (peek and expanded), spring animations, and velocity-based gesture snapping.
-- **Swipe Navigation** — horizontal swipe gestures to navigate between photos in the detail view using `UIPageViewController`.
-- **Favorites System** — users can mark photos as favorites with a heart-shaped button; favorites persist locally and display a visual indicator on gallery thumbnails.
-- **In-Memory Image Caching** — `NSCache`-based caching (200 item limit) with synchronous cache lookup to prevent flickering during cell reuse.
-- **Dark Theme** — the app uses a dark color scheme with blur effects and semi-transparent overlays for a modern aesthetic.
+- Interactive bottom sheet with peek/expanded states, pan gestures, and spring animations
+- Custom blurred back button for an immersive detail view
+- Adaptive grid columns calculated from screen width (works on all devices and orientations)
+- Error state with retry button
 
-### Assumptions & Additional Features
+## Architecture
 
-- The app forces dark mode (`overrideUserInterfaceStyle = .dark`) for a consistent visual experience.
-- The detail screen uses a custom back button with a blurred circular background instead of the default navigation bar, providing a more immersive full-screen image viewing experience.
-- The bottom sheet panel in the detail view features a "More..." hint label that fades out as the panel expands, guiding the user to discover additional content.
-- Photo titles are derived from the Unsplash `slug` field (formatted into a readable string) with a fallback to the photographer's name.
-- Error states in the gallery include a descriptive message and a retry button.
-
-## Architecture & Patterns
-
-### MVVM + Coordinator
-
-The app follows the **MVVM (Model-View-ViewModel)** pattern combined with the **Coordinator** pattern for navigation:
-
-| Layer | Responsibility |
-|---|---|
-| **Model** | Data models (`UnsplashPhoto`), networking (`APIClient`), persistence (`FavoritesStore`), image loading (`ImageLoader`) |
-| **ViewModel** | Business logic, state management, data transformation (`GalleryViewModel`, `DetailViewModel`) |
-| **View** | UI rendering and user interaction (`GalleryViewController`, `DetailPageViewController`, `DetailContentViewController`) |
-| **Coordinator** | Navigation flow, dependency creation and injection (`AppCoordinator`) |
-
-### SOLID Principles
-
-| Principle | Application |
-|---|---|
-| **Single Responsibility** | Each class has one clear purpose — `APIClient` handles networking, `FavoritesStore` manages persistence, `ImageLoader` handles image fetching and caching |
-| **Open/Closed** | The `Endpoint` protocol is open for extension — adding a new API endpoint only requires a new enum case, no changes to `APIClient` |
-| **Liskov Substitution** | All protocol conformances (`APIClientProtocol`, `FavoritesStoreProtocol`, `ImageLoaderProtocol`) can be substituted with mocks without affecting behavior |
-| **Interface Segregation** | Protocols are small and focused: `APIClientProtocol` (1 method), `FavoritesStoreProtocol` (2 methods), `ImageLoaderProtocol` (2 methods) |
-| **Dependency Inversion** | ViewModels and ViewControllers depend on protocol abstractions, not concrete types; all dependencies are injected from `AppCoordinator` |
-
-### Frameworks & Technologies
+**MVVM + Coordinator** — ViewModels handle business logic and state; the Coordinator manages navigation and dependency injection. No third-party dependencies.
 
 | Technology | Usage |
 |---|---|
-| **UIKit** | Entire UI built programmatically |
-| **URLSession** | Networking with `async/await` |
-| **NSCache** | In-memory image caching |
-| **UserDefaults** | Local persistence for favorites |
-| **NotificationCenter** | Cross-screen favorites synchronization |
-| **UICollectionViewCompositionalLayout** | Adaptive gallery grid |
-| **UIPageViewController** | Swipe-based detail navigation |
-| **Swift Testing** | Unit tests |
-| **SwiftLint** | Code style enforcement |
+| UIKit | Programmatic UI (no storyboards) |
+| URLSession | Async/await networking |
+| NSCache | Image caching |
+| UserDefaults | Favorites persistence |
+| Swift Testing | Unit tests |
+| SwiftLint | Code style |
 
-No third-party dependencies are used.
+### SOLID
 
-### Project Structure
-
-```
-Photo Gallery/
-├── App/
-│   ├── AppDelegate.swift            # Application entry point
-│   ├── SceneDelegate.swift          # Window and coordinator bootstrap
-│   └── AppCoordinator.swift         # Navigation and dependency injection
-├── Models/
-│   └── UnsplashPhoto.swift          # API response data models
-├── Model/
-│   ├── Network/
-│   │   ├── Endpoint.swift           # Endpoint protocol
-│   │   ├── UnsplashEndpoint.swift   # Unsplash API endpoints
-│   │   ├── APIClient.swift          # Generic async network client
-│   │   ├── APIKeyProvider.swift     # Secure API key access
-│   │   └── NetworkError.swift       # Typed error handling
-│   ├── ImageLoading/
-│   │   └── ImageLoader.swift        # Async image loader with NSCache
-│   └── Persistence/
-│       └── FavoritesStore.swift     # UserDefaults-backed favorites
-└── Scenes/
-    ├── Gallery/
-    │   ├── GalleryViewModel.swift   # Gallery state and pagination
-    │   ├── GalleryViewController.swift  # Grid UI with infinite scroll
-    │   └── GalleryCell.swift        # Thumbnail cell with favorite badge
-    └── Detail/
-        ├── DetailViewModel.swift    # Detail data mapping
-        ├── DetailPageViewController.swift   # Swipe navigation
-        └── DetailContentViewController.swift # Image + bottom sheet
-```
+- **S** — each class has one responsibility (networking, persistence, image loading, etc.)
+- **O** — `Endpoint` protocol is open for extension without modifying `APIClient`
+- **L** — all dependencies use protocols, substitutable with mocks
+- **I** — small focused protocols (1–2 methods each)
+- **D** — ViewModels depend on abstractions; dependencies injected from `AppCoordinator`
 
 ## Screenshots
 
-<!-- Add screenshots of the app here -->
-
-| Gallery Screen | Detail Screen (Collapsed) | Detail Screen (Expanded) |
+| Gallery | Detail (Collapsed) | Detail (Expanded) |
 |---|---|---|
-| ![Gallery](screenshots/gallery.png) | ![Detail Collapsed](screenshots/detail_collapsed.png) | ![Detail Expanded](screenshots/detail_expanded.png) |
+| ![Gallery](screenshots/gallery.png) | ![Detail](screenshots/detail_collapsed.png) | ![Detail](screenshots/detail_expanded.png) |
 
 ## Configuration
 
-### Unsplash API Key
+1. Register at [unsplash.com/developers](https://unsplash.com/developers) and get an **Access Key**
+2. Open `Photo Gallery/Info.plist` and set the `UNSPLASH_ACCESS_KEY` value
+3. Open `Photo Gallery.xcodeproj` in Xcode and press **Run** (⌘R)
 
-The app requires a free Unsplash API access key. To configure it:
+**Requirements:** iOS 15.6+ · Xcode 15+ · Swift 5.9+
 
-1. Register at [unsplash.com/developers](https://unsplash.com/developers) and create a new application.
-2. Copy your **Access Key**.
-3. Open `Photo Gallery/Info.plist`.
-4. Set the value of the `UNSPLASH_ACCESS_KEY` key to your access key.
-
-> **Note:** The API key is stored in `Info.plist` and is read at runtime via `APIKeyProvider`. The app will crash with a descriptive error message if the key is missing or not configured.
-
-### Requirements
-
-- **iOS 15.6+**
-- **Xcode 15+**
-- **Swift 5.9+**
-
-### Build & Run
-
-1. Clone the repository.
-2. Open `Photo Gallery.xcodeproj` in Xcode.
-3. Configure the Unsplash API key (see above).
-4. Select a simulator or device and press **Run** (⌘R).
-
-### Running Tests
-
-Press **⌘U** in Xcode or run from the **Product → Test** menu. The test suite includes:
-
-- `FavoritesStoreTests` — persistence and toggle logic
-- `DetailViewModelTests` — data mapping and state management
-- `UnsplashPhotoTests` — display title and description formatting
-
-## License
-
-This project was created as a test task for an iOS Intern position.
+**Tests:** ⌘U in Xcode (`FavoritesStoreTests`, `DetailViewModelTests`, `UnsplashPhotoTests`)
