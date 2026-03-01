@@ -5,6 +5,7 @@
 //  Created by Никита Горьковой on 24.02.26.
 //
 
+import Combine
 import Foundation
 
 final class GalleryViewModel {
@@ -27,11 +28,15 @@ final class GalleryViewModel {
     private let apiClient: APIClientProtocol
     private let favoritesStore: FavoritesStoreProtocol
 
+    private enum Constants {
+        static let photosPerPage = 30
+    }
+
     private var currentPage = 1
-    private let perPage = 30
+    private let perPage = Constants.photosPerPage
     private var hasMorePages = false
 
-    private var favoriteObserver: NSObjectProtocol?
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
@@ -39,19 +44,12 @@ final class GalleryViewModel {
         self.apiClient = apiClient
         self.favoritesStore = favoritesStore
 
-        favoriteObserver = NotificationCenter.default.addObserver(
-            forName: FavoritesStore.favoriteChangedNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            self?.handleFavoriteChanged(notification)
-        }
-    }
-
-    deinit {
-        if let observer = favoriteObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
+        favoritesStore.favoritesChanged
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] photoID in
+                self?.handleFavoriteChanged(photoID: photoID)
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -109,10 +107,7 @@ final class GalleryViewModel {
         }
     }
 
-    private func handleFavoriteChanged(_ notification: Notification) {
-        guard let photoID = notification.userInfo?[FavoritesStore.changedPhotoIDKey] as? String else {
-            return
-        }
+    private func handleFavoriteChanged(photoID: String) {
         if let index = photos.firstIndex(where: { $0.id == photoID }) {
             state = .loaded(items)
             onItemUpdated?(index)

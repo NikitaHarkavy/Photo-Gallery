@@ -9,6 +9,37 @@ import UIKit
 
 final class DetailContentViewController: UIViewController {
 
+    private enum Layout {
+        static let contentHorizontalInset: CGFloat = 20
+        static let contentBottomInset: CGFloat = 20
+        static let panelCornerRadius: CGFloat = 20
+        static let grabberTopInset: CGFloat = 10
+        static let grabberWidth: CGFloat = 40
+        static let grabberHeight: CGFloat = 5
+        static let grabberBottomSpacing: CGFloat = 12
+        static let grabberCornerRadius: CGFloat = 2.5
+        static let grabberAlpha: CGFloat = 0.4
+        static let contentSpacing: CGFloat = 8
+        static let initialPanelHeight: CGFloat = 80
+        static let maxExpandedHeightRatio: CGFloat = 0.85
+        static let panVelocityThreshold: CGFloat = 300
+    }
+
+    private enum Typography {
+        static let hintFontSize: CGFloat = 13
+        static let titleFontSize: CGFloat = 22
+        static let authorFontSize: CGFloat = 15
+        static let descriptionFontSize: CGFloat = 16
+        static let authorAlpha: CGFloat = 0.7
+        static let descriptionAlpha: CGFloat = 0.85
+    }
+
+    private enum Animation {
+        static let duration: TimeInterval = 0.4
+        static let springDamping: CGFloat = 0.85
+        static let initialSpringVelocity: CGFloat = 0.5
+    }
+
     let index: Int
 
     private let item: DetailViewModel.DetailItem
@@ -22,11 +53,11 @@ final class DetailContentViewController: UIViewController {
     private var panelScrollView: UIScrollView!
     private var needsInitialLayout = true
 
-    private let grabberArea: CGFloat = 10 + 5 + 12
+    private let grabberArea: CGFloat = Layout.grabberTopInset + Layout.grabberHeight + Layout.grabberBottomSpacing
 
     private var peekHeight: CGFloat {
         let bottomSafe = view.safeAreaInsets.bottom
-        let contentWidth = view.bounds.width - 40
+        let contentWidth = view.bounds.width - Layout.contentHorizontalInset * 2
         let fittingSize = CGSize(width: contentWidth, height: UIView.layoutFittingCompressedSize.height)
         let titleHeight = titleLabel.systemLayoutSizeFitting(fittingSize,
             withHorizontalFittingPriority: .required,
@@ -34,18 +65,18 @@ final class DetailContentViewController: UIViewController {
         let authorRowHeight = authorRow.systemLayoutSizeFitting(fittingSize,
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel).height
-        return grabberArea + titleHeight + 8 + authorRowHeight + bottomSafe
+        return grabberArea + titleHeight + Layout.contentSpacing + authorRowHeight + bottomSafe
     }
 
     private var expandedHeight: CGFloat {
         let bottomSafe = view.safeAreaInsets.bottom
-        let contentWidth = view.bounds.width - 40
+        let contentWidth = view.bounds.width - Layout.contentHorizontalInset * 2
         let fittingSize = CGSize(width: contentWidth, height: UIView.layoutFittingCompressedSize.height)
         let contentHeight = contentStack.systemLayoutSizeFitting(fittingSize,
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel).height
-        let totalNeeded = grabberArea + contentHeight + 20 + bottomSafe
-        return min(totalNeeded, view.bounds.height * 0.85)
+        let totalNeeded = grabberArea + contentHeight + Layout.contentBottomInset + bottomSafe
+        return min(totalNeeded, view.bounds.height * Layout.maxExpandedHeightRatio)
     }
 
     // MARK: - UI Elements
@@ -63,7 +94,7 @@ final class DetailContentViewController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.clipsToBounds = true
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = Layout.panelCornerRadius
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         return view
     }()
@@ -79,17 +110,17 @@ final class DetailContentViewController: UIViewController {
     private let grabberView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.white.withAlphaComponent(0.4)
-        view.layer.cornerRadius = 2.5
+        view.backgroundColor = UIColor.white.withAlphaComponent(Layout.grabberAlpha)
+        view.layer.cornerRadius = Layout.grabberCornerRadius
         view.alpha = 0
         return view
     }()
 
     private let hintLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = UIColor.white.withAlphaComponent(0.4)
-        label.text = "More..."
+        label.font = .systemFont(ofSize: Typography.hintFontSize, weight: .regular)
+        label.textColor = UIColor.white.withAlphaComponent(Layout.grabberAlpha)
+        label.text = L10n.Detail.moreHint
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         return label
@@ -97,7 +128,7 @@ final class DetailContentViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 22, weight: .bold)
+        label.font = .systemFont(ofSize: Typography.titleFontSize, weight: .bold)
         label.textColor = .white
         label.numberOfLines = 0
         return label
@@ -105,16 +136,16 @@ final class DetailContentViewController: UIViewController {
 
     private let authorLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.textColor = UIColor.white.withAlphaComponent(0.7)
+        label.font = .systemFont(ofSize: Typography.authorFontSize, weight: .medium)
+        label.textColor = UIColor.white.withAlphaComponent(Typography.authorAlpha)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16)
-        label.textColor = UIColor.white.withAlphaComponent(0.85)
+        label.font = .systemFont(ofSize: Typography.descriptionFontSize)
+        label.textColor = UIColor.white.withAlphaComponent(Typography.descriptionAlpha)
         label.numberOfLines = 0
         return label
     }()
@@ -177,20 +208,20 @@ final class DetailContentViewController: UIViewController {
         contentStack = UIStackView()
         contentStack.translatesAutoresizingMaskIntoConstraints = false
         contentStack.axis = .vertical
-        contentStack.spacing = 8
+        contentStack.spacing = Layout.contentSpacing
         panelScrollView.addSubview(contentStack)
 
         let authorSpacer = UIView()
         authorRow = UIStackView(arrangedSubviews: [authorLabel, hintLabel, authorSpacer])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
-        authorRow.spacing = 8
+        authorRow.spacing = Layout.contentSpacing
 
         contentStack.addArrangedSubview(titleLabel)
         contentStack.addArrangedSubview(authorRow)
         contentStack.addArrangedSubview(descriptionLabel)
 
-        panelHeightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: 80)
+        panelHeightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: Layout.initialPanelHeight)
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -208,21 +239,21 @@ final class DetailContentViewController: UIViewController {
             blurView.trailingAnchor.constraint(equalTo: panelContainer.trailingAnchor),
             blurView.bottomAnchor.constraint(equalTo: panelContainer.bottomAnchor),
 
-            grabberView.topAnchor.constraint(equalTo: panelContainer.topAnchor, constant: 10),
+            grabberView.topAnchor.constraint(equalTo: panelContainer.topAnchor, constant: Layout.grabberTopInset),
             grabberView.centerXAnchor.constraint(equalTo: panelContainer.centerXAnchor),
-            grabberView.widthAnchor.constraint(equalToConstant: 40),
-            grabberView.heightAnchor.constraint(equalToConstant: 5),
+            grabberView.widthAnchor.constraint(equalToConstant: Layout.grabberWidth),
+            grabberView.heightAnchor.constraint(equalToConstant: Layout.grabberHeight),
 
-            panelScrollView.topAnchor.constraint(equalTo: grabberView.bottomAnchor, constant: 12),
+            panelScrollView.topAnchor.constraint(equalTo: grabberView.bottomAnchor, constant: Layout.grabberBottomSpacing),
             panelScrollView.leadingAnchor.constraint(equalTo: panelContainer.leadingAnchor),
             panelScrollView.trailingAnchor.constraint(equalTo: panelContainer.trailingAnchor),
             panelScrollView.bottomAnchor.constraint(equalTo: panelContainer.safeAreaLayoutGuide.bottomAnchor),
 
             contentStack.topAnchor.constraint(equalTo: panelScrollView.topAnchor),
-            contentStack.leadingAnchor.constraint(equalTo: panelScrollView.leadingAnchor, constant: 20),
-            contentStack.trailingAnchor.constraint(equalTo: panelScrollView.trailingAnchor, constant: -20),
-            contentStack.bottomAnchor.constraint(equalTo: panelScrollView.bottomAnchor, constant: -20),
-            contentStack.widthAnchor.constraint(equalTo: panelScrollView.widthAnchor, constant: -40)
+            contentStack.leadingAnchor.constraint(equalTo: panelScrollView.leadingAnchor, constant: Layout.contentHorizontalInset),
+            contentStack.trailingAnchor.constraint(equalTo: panelScrollView.trailingAnchor, constant: -Layout.contentHorizontalInset),
+            contentStack.bottomAnchor.constraint(equalTo: panelScrollView.bottomAnchor, constant: -Layout.contentBottomInset),
+            contentStack.widthAnchor.constraint(equalTo: panelScrollView.widthAnchor, constant: -Layout.contentHorizontalInset * 2)
         ])
     }
 
@@ -270,9 +301,9 @@ final class DetailContentViewController: UIViewController {
 
         case .ended, .cancelled:
             let shouldExpand: Bool
-            if velocity.y < -300 {
+            if velocity.y < -Layout.panVelocityThreshold {
                 shouldExpand = true
-            } else if velocity.y > 300 {
+            } else if velocity.y > Layout.panVelocityThreshold {
                 shouldExpand = false
             } else {
                 let midpoint = (peekHeight + expandedHeight) / 2
@@ -299,10 +330,10 @@ final class DetailContentViewController: UIViewController {
         }
 
         UIView.animate(
-            withDuration: 0.4,
+            withDuration: Animation.duration,
             delay: 0,
-            usingSpringWithDamping: 0.85,
-            initialSpringVelocity: 0.5,
+            usingSpringWithDamping: Animation.springDamping,
+            initialSpringVelocity: Animation.initialSpringVelocity,
             options: .curveEaseOut
         ) {
             self.view.layoutIfNeeded()

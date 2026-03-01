@@ -1,0 +1,27 @@
+// MARK: - Gallery
+
+"gallery.title" = "Gallery";
+
+// MARK: - Favorites
+
+"favorites.title" = "Favorites";
+"favorites.empty" = "No favorites yet";
+
+// MARK: - Detail
+
+"detail.moreHint" = "More...";
+
+// MARK: - Photo
+
+"photo.noDescription" = "No description";
+
+// MARK: - Actions
+
+"action.retry" = "Retry";
+
+// MARK: - Errors
+
+"error.invalidURL" = "Invalid URL";
+"error.invalidResponse" = "Invalid server response";
+"error.httpError" = "Server error (status: %d)";
+"error.decodingFailed" = "Failed to parse server response";

@@ -53,7 +53,7 @@ final class DetailViewModel {
 
     func toggleFavorite(at index: Int) {
         let photo = photos[index]
-        favoritesStore.toggleFavorite(id: photo.id)
+        favoritesStore.toggleFavorite(photo: photo)
         onFavoriteToggled?()
     }
 

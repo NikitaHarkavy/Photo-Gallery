@@ -27,7 +27,7 @@ struct UnsplashPhoto: Decodable, Sendable {
     }
 
     var displayDescription: String {
-        description ?? altDescription ?? "No description"
+        description ?? altDescription ?? L10n.Photo.noDescription
     }
 }
 

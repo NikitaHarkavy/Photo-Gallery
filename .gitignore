@@ -27,6 +27,9 @@ Pods/
 # Carthage
 Carthage/Build/
 
+# Secrets
+Secrets.xcconfig
+
 # OS files
 .DS_Store
 *.swp

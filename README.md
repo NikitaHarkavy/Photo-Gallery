@@ -58,8 +58,13 @@ An iOS image gallery app that fetches photos from the Unsplash API, displays the
 ## Configuration
 
 1. Register at [unsplash.com/developers](https://unsplash.com/developers) and get an **Access Key**
-2. Open `Photo Gallery/Info.plist` and set the `UNSPLASH_ACCESS_KEY` value
+2. Copy `Secrets.example.xcconfig` to `Secrets.xcconfig` and paste your key:
+   ```
+   UNSPLASH_ACCESS_KEY = your_key_here
+   ```
 3. Open `Photo Gallery.xcodeproj` in Xcode and press **Run** (⌘R)
+
+> `Secrets.xcconfig` is listed in `.gitignore` and will not be committed to the repository.
 
 **Requirements:** iOS 15.6+ · Xcode 15+ · Swift 5.9+
 

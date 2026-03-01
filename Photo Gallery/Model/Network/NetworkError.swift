@@ -17,13 +17,13 @@ enum NetworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "Invalid URL"
+            return L10n.Error.invalidURL
         case .invalidResponse:
-            return "Invalid server response"
+            return L10n.Error.invalidResponse
         case .httpError(let statusCode):
-            return "Server error (status: \(statusCode))"
+            return L10n.Error.httpError(statusCode: statusCode)
         case .decodingError:
-            return "Failed to parse server response"
+            return L10n.Error.decodingFailed
         case .networkError(let error):
             return error.localizedDescription
         }

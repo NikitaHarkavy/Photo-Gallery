@@ -20,6 +20,6 @@
 		</dict>
 	</dict>
 	<key>UNSPLASH_ACCESS_KEY</key>
-	<string>YOUR_UNSPLASH_ACCESS_KEY</string>
+	<string>$(UNSPLASH_ACCESS_KEY)</string>
 </dict>
 </plist>

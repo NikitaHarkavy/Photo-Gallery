@@ -19,9 +19,13 @@ final class ImageLoader: ImageLoaderProtocol {
     private let cache = NSCache<NSString, UIImage>()
     private let session: URLSession
 
+    private enum Constants {
+        static let cacheCountLimit = 200
+    }
+
     init(session: URLSession = .shared) {
         self.session = session
-        cache.countLimit = 200
+        cache.countLimit = Constants.cacheCountLimit
     }
 
     // MARK: - Public Methods

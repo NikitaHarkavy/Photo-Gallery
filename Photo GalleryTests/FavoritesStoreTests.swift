@@ -5,7 +5,7 @@
 //  Created by Никита Горьковой on 24.02.26.
 //
 
-import Foundation
+import CoreData
 @testable import Photo_Gallery
 import Testing
 
@@ -16,8 +16,8 @@ struct FavoritesStoreTests {
     private let store: FavoritesStore
 
     init() {
-        let defaults = UserDefaults(suiteName: UUID().uuidString)!
-        store = FavoritesStore(defaults: defaults)
+        let stack = CoreDataStack(inMemory: true)
+        store = FavoritesStore(context: stack.container.viewContext)
     }
 
     @Test("Photo is not favorite by default")
@@ -27,26 +27,26 @@ struct FavoritesStoreTests {
 
     @Test("Toggle adds photo to favorites")
     func toggleAdds() {
-        store.toggleFavorite(id: "photo-1")
+        store.toggleFavorite(photo: TestData.makePhoto(id: "photo-1"))
         #expect(store.isFavorite(id: "photo-1"))
     }
 
     @Test("Toggle twice removes photo from favorites")
     func toggleTwiceRemoves() {
-        store.toggleFavorite(id: "photo-1")
-        store.toggleFavorite(id: "photo-1")
+        let photo = TestData.makePhoto(id: "photo-1")
+        store.toggleFavorite(photo: photo)
+        store.toggleFavorite(photo: photo)
         #expect(!store.isFavorite(id: "photo-1"))
     }
 
-    @Test("Favorites persist across store instances")
+    @Test("Favorites persist across store instances sharing same context")
     func persistence() {
-        let suiteName = UUID().uuidString
-        let sharedDefaults = UserDefaults(suiteName: suiteName)!
+        let stack = CoreDataStack(inMemory: true)
 
-        let first = FavoritesStore(defaults: sharedDefaults)
-        first.toggleFavorite(id: "photo-1")
+        let first = FavoritesStore(context: stack.container.viewContext)
+        first.toggleFavorite(photo: TestData.makePhoto(id: "photo-1"))
 
-        let second = FavoritesStore(defaults: sharedDefaults)
+        let second = FavoritesStore(context: stack.container.viewContext)
         #expect(second.isFavorite(id: "photo-1"))
     }
 }

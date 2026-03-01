@@ -6,6 +6,7 @@
 //
 
 import UIKit
+internal import CoreData
 
 enum ViewState<T> {
     case idle
@@ -19,6 +20,7 @@ final class AppCoordinator {
     private let window: UIWindow
     private let navigationController: UINavigationController
     private let apiClient: APIClientProtocol
+    private let coreDataStack: CoreDataStack
     private let favoritesStore: FavoritesStoreProtocol
     private let imageLoader: ImageLoaderProtocol
 
@@ -28,7 +30,8 @@ final class AppCoordinator {
         self.window = window
         self.navigationController = UINavigationController()
         self.apiClient = APIClient()
-        self.favoritesStore = FavoritesStore()
+        self.coreDataStack = CoreDataStack()
+        self.favoritesStore = FavoritesStore(context: coreDataStack.container.viewContext)
         self.imageLoader = ImageLoader.shared
     }
 
@@ -46,10 +49,44 @@ final class AppCoordinator {
         galleryVC.onPhotoSelected = { [weak self] index in
             self?.showDetail(startingAt: index)
         }
+        galleryVC.onFavoritesTapped = { [weak self] in
+            self?.showFavorites()
+        }
 
         navigationController.viewControllers = [galleryVC]
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
+    }
+
+    private func showFavorites() {
+        let favoritesVM = FavoritesViewModel(favoritesStore: favoritesStore)
+        let favoritesVC = FavoritesViewController(
+            viewModel: favoritesVM,
+            imageLoader: imageLoader
+        )
+        favoritesVC.onPhotoSelected = { [weak self] index in
+            self?.showFavoriteDetail(viewModel: favoritesVM, startingAt: index)
+        }
+        navigationController.pushViewController(favoritesVC, animated: true)
+    }
+
+    private func showFavoriteDetail(viewModel: FavoritesViewModel, startingAt index: Int) {
+        let photos = viewModel.photos
+        guard !photos.isEmpty else { return }
+
+        let detailVM = DetailViewModel(
+            photos: photos,
+            initialIndex: index,
+            favoritesStore: favoritesStore
+        )
+        let detailPageVC = DetailPageViewController(
+            viewModel: detailVM,
+            imageLoader: imageLoader
+        )
+        detailPageVC.hidesBottomBarWhenPushed = true
+
+        navigationController.pushViewController(detailPageVC, animated: true)
+        navigationController.setNavigationBarHidden(true, animated: true)
     }
 
     private func showDetail(startingAt index: Int) {

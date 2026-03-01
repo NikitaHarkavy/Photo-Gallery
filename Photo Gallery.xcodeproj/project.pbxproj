@@ -18,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		8B1A00012F50A00100000001 /* Photo GalleryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Photo GalleryTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B5EC5012F60000100000001 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		8BD582312F45960F00981A6F /* Photo Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -68,6 +69,7 @@
 		8BD582282F45960F00981A6F = {
 			isa = PBXGroup;
 			children = (
+				8B5EC5012F60000100000001 /* Secrets.xcconfig */,
 				8BD582332F45960F00981A6F /* Photo Gallery */,
 				8B1A00032F50A00100000003 /* Photo GalleryTests */,
 				8BD582322F45960F00981A6F /* Products */,
@@ -277,6 +279,7 @@
 		};
 		8BD582452F45961000981A6F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B5EC5012F60000100000001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -312,6 +315,7 @@
 		};
 		8BD582462F45961000981A6F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B5EC5012F60000100000001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

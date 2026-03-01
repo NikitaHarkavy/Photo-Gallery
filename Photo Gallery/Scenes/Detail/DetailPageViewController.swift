@@ -9,6 +9,17 @@ import UIKit
 
 final class DetailPageViewController: UIPageViewController {
 
+    private enum Layout {
+        static let backButtonCornerRadius: CGFloat = 22
+        static let backButtonTopInset: CGFloat = 8
+        static let backButtonLeadingInset: CGFloat = 16
+        static let backButtonSize: CGFloat = 44
+        static let backIconPointSize: CGFloat = 18
+        static let favoriteTopInset: CGFloat = 16
+        static let favoriteTrailingInset: CGFloat = 20
+        static let favoriteIconPointSize: CGFloat = 24
+    }
+
     private let viewModel: DetailViewModel
     private let imageLoader: ImageLoaderProtocol
 
@@ -34,7 +45,7 @@ final class DetailPageViewController: UIPageViewController {
     private let backContainer: UIView = {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.cornerRadius = 22
+        container.layer.cornerRadius = Layout.backButtonCornerRadius
         container.clipsToBounds = true
 
         let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
@@ -44,7 +55,7 @@ final class DetailPageViewController: UIPageViewController {
         let icon = UIImageView()
         icon.translatesAutoresizingMaskIntoConstraints = false
         icon.image = UIImage(systemName: "chevron.left",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold))
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: Layout.backIconPointSize, weight: .semibold))
         icon.tintColor = .white
         icon.contentMode = .scaleAspectFit
         container.addSubview(icon)
@@ -84,10 +95,10 @@ final class DetailPageViewController: UIPageViewController {
         backContainer.addGestureRecognizer(tap)
 
         NSLayoutConstraint.activate([
-            backContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            backContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            backContainer.widthAnchor.constraint(equalToConstant: 44),
-            backContainer.heightAnchor.constraint(equalToConstant: 44)
+            backContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Layout.backButtonTopInset),
+            backContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.backButtonLeadingInset),
+            backContainer.widthAnchor.constraint(equalToConstant: Layout.backButtonSize),
+            backContainer.heightAnchor.constraint(equalToConstant: Layout.backButtonSize)
         ])
     }
 
@@ -102,14 +113,14 @@ final class DetailPageViewController: UIPageViewController {
         favoriteIcon.addGestureRecognizer(tap)
 
         NSLayoutConstraint.activate([
-            favoriteIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            favoriteIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            favoriteIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Layout.favoriteTopInset),
+            favoriteIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Layout.favoriteTrailingInset)
         ])
     }
 
     private func updateFavoriteIcon() {
         let item = viewModel.item(at: viewModel.currentIndex)
-        let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: Layout.favoriteIconPointSize, weight: .medium)
         let imageName = item.isFavorite ? "heart.fill" : "heart"
         favoriteIcon.image = UIImage(systemName: imageName, withConfiguration: config)
         favoriteIcon.tintColor = item.isFavorite ? .systemRed : .white

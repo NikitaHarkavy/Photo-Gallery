@@ -9,7 +9,20 @@ import UIKit
 
 final class GalleryViewController: UIViewController {
 
+    private enum Layout {
+        static let errorLabelFontSize: CGFloat = 16
+        static let retryButtonFontSize: CGFloat = 17
+        static let errorLabelCenterYOffset: CGFloat = -20
+        static let errorLabelHorizontalInset: CGFloat = 32
+        static let retryButtonTopSpacing: CGFloat = 16
+        static let targetCellWidth: CGFloat = 190
+        static let minimumColumns = 2
+        static let gridSpacing: CGFloat = 2
+        static let paginationThresholdMultiplier: CGFloat = 2
+    }
+
     var onPhotoSelected: ((Int) -> Void)?
+    var onFavoritesTapped: (() -> Void)?
 
     private let viewModel: GalleryViewModel
     private let imageLoader: ImageLoaderProtocol
@@ -39,7 +52,7 @@ final class GalleryViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .secondaryLabel
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: Layout.errorLabelFontSize)
         label.isHidden = true
         return label
     }()
@@ -47,8 +60,8 @@ final class GalleryViewController: UIViewController {
     private lazy var retryButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Retry", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        button.setTitle(L10n.Action.retry, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: Layout.retryButtonFontSize, weight: .semibold)
         button.isHidden = true
         button.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
         return button
@@ -87,9 +100,17 @@ final class GalleryViewController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        title = "Gallery"
+        title = L10n.Gallery.title
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "heart.fill"),
+            style: .plain,
+            target: self,
+            action: #selector(favoritesTapped)
+        )
+        navigationItem.rightBarButtonItem?.tintColor = .systemRed
 
         view.addSubview(collectionView)
         view.addSubview(activityIndicator)
@@ -106,11 +127,11 @@ final class GalleryViewController: UIViewController {
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
             errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20),
-            errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: Layout.errorLabelCenterYOffset),
+            errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.errorLabelHorizontalInset),
+            errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Layout.errorLabelHorizontalInset),
 
-            retryButton.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: 16),
+            retryButton.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: Layout.retryButtonTopSpacing),
             retryButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -118,9 +139,8 @@ final class GalleryViewController: UIViewController {
     private func createLayout() -> UICollectionViewCompositionalLayout {
         UICollectionViewCompositionalLayout { _, environment in
             let width = environment.container.contentSize.width
-            let targetCellWidth: CGFloat = 190
-            let columns = max(2, Int(width / targetCellWidth))
-            let spacing: CGFloat = 2
+            let columns = max(Layout.minimumColumns, Int(width / Layout.targetCellWidth))
+            let spacing = Layout.gridSpacing
             let fraction = 1.0 / CGFloat(columns)
 
             let itemSize = NSCollectionLayoutSize(
@@ -195,6 +215,10 @@ final class GalleryViewController: UIViewController {
             await viewModel.loadPhotos()
         }
     }
+
+    @objc private func favoritesTapped() {
+        onFavoritesTapped?()
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -243,7 +267,7 @@ extension GalleryViewController: UICollectionViewDelegate {
 
         guard contentHeight > 0 else { return }
 
-        if offsetY > contentHeight - frameHeight * 2 {
+        if offsetY > contentHeight - frameHeight * Layout.paginationThresholdMultiplier {
             Task {
                 await viewModel.loadNextPage()
             }

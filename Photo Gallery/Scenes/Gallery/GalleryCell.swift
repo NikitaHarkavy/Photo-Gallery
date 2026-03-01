@@ -11,6 +11,15 @@ final class GalleryCell: UICollectionViewCell {
 
     static let reuseIdentifier = "GalleryCell"
 
+    private enum Layout {
+        static let favoriteIconInset: CGFloat = 8
+        static let favoriteIconWidth: CGFloat = 28
+        static let favoriteIconHeight: CGFloat = 25
+        static let shadowOpacity: Float = 0.6
+        static let shadowOffsetHeight: CGFloat = 1
+        static let shadowRadius: CGFloat = 2
+    }
+
     // MARK: - UI Elements
 
     private let imageView: UIImageView = {
@@ -29,9 +38,9 @@ final class GalleryCell: UICollectionViewCell {
         imageView.tintColor = .systemRed
         imageView.isHidden = true
         imageView.layer.shadowColor = UIColor.black.cgColor
-        imageView.layer.shadowOpacity = 0.6
-        imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
-        imageView.layer.shadowRadius = 2
+        imageView.layer.shadowOpacity = Layout.shadowOpacity
+        imageView.layer.shadowOffset = CGSize(width: 0, height: Layout.shadowOffsetHeight)
+        imageView.layer.shadowRadius = Layout.shadowRadius
         return imageView
     }()
 
@@ -91,10 +100,10 @@ final class GalleryCell: UICollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
-            favoriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            favoriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            favoriteIcon.widthAnchor.constraint(equalToConstant: 28),
-            favoriteIcon.heightAnchor.constraint(equalToConstant: 25)
+            favoriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Layout.favoriteIconInset),
+            favoriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Layout.favoriteIconInset),
+            favoriteIcon.widthAnchor.constraint(equalToConstant: Layout.favoriteIconWidth),
+            favoriteIcon.heightAnchor.constraint(equalToConstant: Layout.favoriteIconHeight)
         ])
     }
 }
