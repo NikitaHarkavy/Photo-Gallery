@@ -5,8 +5,8 @@
 //  Created by Никита Горьковой on 24.02.26.
 //
 
-import UIKit
 internal import CoreData
+import UIKit
 
 enum ViewState<T> {
     case idle
@@ -24,15 +24,13 @@ final class AppCoordinator {
     private let favoritesStore: FavoritesStoreProtocol
     private let imageLoader: ImageLoaderProtocol
 
-    private var galleryViewModel: GalleryViewModel?
-
     init(window: UIWindow) {
         self.window = window
         self.navigationController = UINavigationController()
         self.apiClient = APIClient()
         self.coreDataStack = CoreDataStack()
         self.favoritesStore = FavoritesStore(context: coreDataStack.container.viewContext)
-        self.imageLoader = ImageLoader.shared
+        self.imageLoader = ImageLoader()
     }
 
     func start() {
@@ -40,14 +38,13 @@ final class AppCoordinator {
             apiClient: apiClient,
             favoritesStore: favoritesStore
         )
-        galleryViewModel = viewModel
 
         let galleryVC = GalleryViewController(
             viewModel: viewModel,
             imageLoader: imageLoader
         )
-        galleryVC.onPhotoSelected = { [weak self] index in
-            self?.showDetail(startingAt: index)
+        galleryVC.onPhotoSelected = { [weak self] photos, index in
+            self?.showDetail(photos: photos, startingAt: index)
         }
         galleryVC.onFavoritesTapped = { [weak self] in
             self?.showFavorites()
@@ -64,33 +61,14 @@ final class AppCoordinator {
             viewModel: favoritesVM,
             imageLoader: imageLoader
         )
-        favoritesVC.onPhotoSelected = { [weak self] index in
-            self?.showFavoriteDetail(viewModel: favoritesVM, startingAt: index)
+        favoritesVC.onPhotoSelected = { [weak self] photos, index in
+            self?.showDetail(photos: photos, startingAt: index)
         }
         navigationController.pushViewController(favoritesVC, animated: true)
     }
 
-    private func showFavoriteDetail(viewModel: FavoritesViewModel, startingAt index: Int) {
-        let photos = viewModel.photos
+    private func showDetail(photos: [UnsplashPhoto], startingAt index: Int) {
         guard !photos.isEmpty else { return }
-
-        let detailVM = DetailViewModel(
-            photos: photos,
-            initialIndex: index,
-            favoritesStore: favoritesStore
-        )
-        let detailPageVC = DetailPageViewController(
-            viewModel: detailVM,
-            imageLoader: imageLoader
-        )
-        detailPageVC.hidesBottomBarWhenPushed = true
-
-        navigationController.pushViewController(detailPageVC, animated: true)
-        navigationController.setNavigationBarHidden(true, animated: true)
-    }
-
-    private func showDetail(startingAt index: Int) {
-        guard let photos = galleryViewModel?.photos, !photos.isEmpty else { return }
 
         let detailVM = DetailViewModel(
             photos: photos,

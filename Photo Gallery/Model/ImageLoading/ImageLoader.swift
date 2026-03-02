@@ -13,8 +13,6 @@ protocol ImageLoaderProtocol: AnyObject {
 }
 
 final class ImageLoader: ImageLoaderProtocol {
-    
-    static let shared = ImageLoader()
 
     private let cache = NSCache<NSString, UIImage>()
     private let session: URLSession

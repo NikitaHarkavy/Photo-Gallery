@@ -46,7 +46,7 @@ final class GalleryCell: UICollectionViewCell {
 
     // MARK: - State
 
-    private var imageLoadTask: Task<Void, Never>?
+    private var displayedItemId: String?
 
     // MARK: - Init
 
@@ -64,28 +64,22 @@ final class GalleryCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageLoadTask?.cancel()
-        imageLoadTask = nil
         imageView.image = nil
         favoriteIcon.isHidden = true
+        displayedItemId = nil
     }
 
     // MARK: - Configuration
 
-    func configure(with item: GalleryViewModel.GalleryItem, imageLoader: ImageLoaderProtocol) {
-        favoriteIcon.isHidden = !item.isFavorite
+    func configure(image: UIImage?, isFavorite: Bool, itemId: String) {
+        displayedItemId = itemId
+        imageView.image = image
+        favoriteIcon.isHidden = !isFavorite
+    }
 
-        imageLoadTask?.cancel()
-
-        if let cached = imageLoader.cachedImage(for: item.thumbURL) {
-            imageView.image = cached
-        } else {
-            imageLoadTask = Task { [weak self] in
-                let image = await imageLoader.loadImage(from: item.thumbURL)
-                guard !Task.isCancelled else { return }
-                self?.imageView.image = image
-            }
-        }
+    func updateImageIfMatching(_ image: UIImage?, itemId: String) {
+        guard displayedItemId == itemId else { return }
+        imageView.image = image
     }
 
     // MARK: - Layout
@@ -101,7 +95,10 @@ final class GalleryCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
             favoriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Layout.favoriteIconInset),
-            favoriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Layout.favoriteIconInset),
+            favoriteIcon.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -Layout.favoriteIconInset
+            ),
             favoriteIcon.widthAnchor.constraint(equalToConstant: Layout.favoriteIconWidth),
             favoriteIcon.heightAnchor.constraint(equalToConstant: Layout.favoriteIconHeight)
         ])

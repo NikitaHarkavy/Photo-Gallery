@@ -17,11 +17,8 @@ struct UnsplashPhoto: Decodable, Sendable {
 
     var displayTitle: String {
         if let slug, !slug.isEmpty {
-            return slug
-                .replacingOccurrences(of: "-", with: " ")
-                .prefix(1).uppercased() + slug
-                .replacingOccurrences(of: "-", with: " ")
-                .dropFirst()
+            let formatted = slug.replacingOccurrences(of: "-", with: " ")
+            return formatted.prefix(1).uppercased() + formatted.dropFirst()
         }
         return user.name
     }

@@ -16,7 +16,7 @@ final class FavoritesViewController: UIViewController {
         static let gridSpacing: CGFloat = 2
     }
 
-    var onPhotoSelected: ((Int) -> Void)?
+    var onPhotoSelected: (([UnsplashPhoto], Int) -> Void)?
 
     private let viewModel: FavoritesViewModel
     private let imageLoader: ImageLoaderProtocol
@@ -161,13 +161,31 @@ extension FavoritesViewController: UICollectionViewDataSource {
         }
 
         let item = viewModel.items[indexPath.item]
-        let galleryItem = GalleryViewModel.GalleryItem(
-            id: item.id,
-            thumbURL: item.thumbURL ?? "",
-            isFavorite: true
-        )
-        cell.configure(with: galleryItem, imageLoader: imageLoader)
+        let thumbURL = item.thumbURL ?? ""
+        let image: UIImage?
+        if !thumbURL.isEmpty, let cached = imageLoader.cachedImage(for: thumbURL) {
+            image = cached
+        } else {
+            image = nil
+            if !thumbURL.isEmpty {
+                loadImageForCell(at: indexPath, itemId: item.id, thumbURL: thumbURL)
+            }
+        }
+        cell.configure(image: image, isFavorite: true, itemId: item.id)
         return cell
+    }
+
+    private func loadImageForCell(at indexPath: IndexPath, itemId: String, thumbURL: String) {
+        let listView = collectionView
+        Task { [weak self] in
+            guard let self else { return }
+            let image = await imageLoader.loadImage(from: thumbURL)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                guard let cell = listView.cellForItem(at: indexPath) as? GalleryCell else { return }
+                cell.updateImageIfMatching(image, itemId: itemId)
+            }
+        }
     }
 }
 
@@ -179,6 +197,6 @@ extension FavoritesViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        onPhotoSelected?(indexPath.item)
+        onPhotoSelected?(viewModel.photos, indexPath.item)
     }
 }

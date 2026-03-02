@@ -16,6 +16,15 @@ final class DetailViewModel {
         let regularURL: String
         let isFavorite: Bool
         let authorName: String
+
+        static let empty = DetailItem(
+            id: "",
+            title: "",
+            description: "",
+            regularURL: "",
+            isFavorite: false,
+            authorName: ""
+        )
     }
 
     private let photos: [UnsplashPhoto]
@@ -40,6 +49,9 @@ final class DetailViewModel {
     // MARK: - Public Methods
 
     func item(at index: Int) -> DetailItem {
+        guard (0..<photos.count).contains(index) else {
+            return DetailItem.empty
+        }
         let photo = photos[index]
         return DetailItem(
             id: photo.id,
@@ -52,6 +64,7 @@ final class DetailViewModel {
     }
 
     func toggleFavorite(at index: Int) {
+        guard (0..<photos.count).contains(index) else { return }
         let photo = photos[index]
         favoritesStore.toggleFavorite(photo: photo)
         onFavoriteToggled?()

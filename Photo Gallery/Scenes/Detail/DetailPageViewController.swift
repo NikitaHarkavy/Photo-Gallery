@@ -54,8 +54,8 @@ final class DetailPageViewController: UIPageViewController {
 
         let icon = UIImageView()
         icon.translatesAutoresizingMaskIntoConstraints = false
-        icon.image = UIImage(systemName: "chevron.left",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: Layout.backIconPointSize, weight: .semibold))
+        let config = UIImage.SymbolConfiguration(pointSize: Layout.backIconPointSize, weight: .semibold)
+        icon.image = UIImage(systemName: "chevron.left", withConfiguration: config)
         icon.tintColor = .white
         icon.contentMode = .scaleAspectFit
         container.addSubview(icon)
@@ -94,9 +94,13 @@ final class DetailPageViewController: UIPageViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(backTapped))
         backContainer.addGestureRecognizer(tap)
 
+        let topAnchor = view.safeAreaLayoutGuide.topAnchor
         NSLayoutConstraint.activate([
-            backContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Layout.backButtonTopInset),
-            backContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.backButtonLeadingInset),
+            backContainer.topAnchor.constraint(equalTo: topAnchor, constant: Layout.backButtonTopInset),
+            backContainer.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: Layout.backButtonLeadingInset
+            ),
             backContainer.widthAnchor.constraint(equalToConstant: Layout.backButtonSize),
             backContainer.heightAnchor.constraint(equalToConstant: Layout.backButtonSize)
         ])
@@ -112,9 +116,13 @@ final class DetailPageViewController: UIPageViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(favoriteTapped))
         favoriteIcon.addGestureRecognizer(tap)
 
+        let topAnchor = view.safeAreaLayoutGuide.topAnchor
         NSLayoutConstraint.activate([
-            favoriteIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Layout.favoriteTopInset),
-            favoriteIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Layout.favoriteTrailingInset)
+            favoriteIcon.topAnchor.constraint(equalTo: topAnchor, constant: Layout.favoriteTopInset),
+            favoriteIcon.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -Layout.favoriteTrailingInset
+            )
         ])
     }
 

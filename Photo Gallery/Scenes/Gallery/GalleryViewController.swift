@@ -21,7 +21,7 @@ final class GalleryViewController: UIViewController {
         static let paginationThresholdMultiplier: CGFloat = 2
     }
 
-    var onPhotoSelected: ((Int) -> Void)?
+    var onPhotoSelected: (([UnsplashPhoto], Int) -> Void)?
     var onFavoritesTapped: (() -> Void)?
 
     private let viewModel: GalleryViewModel
@@ -86,10 +86,7 @@ final class GalleryViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bindViewModel()
-
-        Task {
-            await viewModel.loadPhotos()
-        }
+        viewModel.loadPhotos()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -127,9 +124,18 @@ final class GalleryViewController: UIViewController {
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
             errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: Layout.errorLabelCenterYOffset),
-            errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.errorLabelHorizontalInset),
-            errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Layout.errorLabelHorizontalInset),
+            errorLabel.centerYAnchor.constraint(
+                equalTo: view.centerYAnchor,
+                constant: Layout.errorLabelCenterYOffset
+            ),
+            errorLabel.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: Layout.errorLabelHorizontalInset
+            ),
+            errorLabel.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -Layout.errorLabelHorizontalInset
+            ),
 
             retryButton.topAnchor.constraint(equalTo: errorLabel.bottomAnchor, constant: Layout.retryButtonTopSpacing),
             retryButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
@@ -211,9 +217,7 @@ final class GalleryViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func retryTapped() {
-        Task {
-            await viewModel.loadPhotos()
-        }
+        viewModel.loadPhotos()
     }
 
     @objc private func favoritesTapped() {
@@ -244,8 +248,28 @@ extension GalleryViewController: UICollectionViewDataSource {
         }
 
         let item = viewModel.items[indexPath.item]
-        cell.configure(with: item, imageLoader: imageLoader)
+        let image: UIImage?
+        if let cached = imageLoader.cachedImage(for: item.thumbURL) {
+            image = cached
+        } else {
+            image = nil
+            loadImageForCell(at: indexPath, item: item)
+        }
+        cell.configure(image: image, isFavorite: item.isFavorite, itemId: item.id)
         return cell
+    }
+
+    private func loadImageForCell(at indexPath: IndexPath, item: GalleryViewModel.GalleryItem) {
+        let listView = collectionView
+        Task { [weak self] in
+            guard let self else { return }
+            let image = await imageLoader.loadImage(from: item.thumbURL)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                guard let cell = listView.cellForItem(at: indexPath) as? GalleryCell else { return }
+                cell.updateImageIfMatching(image, itemId: item.id)
+            }
+        }
     }
 }
 
@@ -257,7 +281,7 @@ extension GalleryViewController: UICollectionViewDelegate {
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        onPhotoSelected?(indexPath.item)
+        onPhotoSelected?(viewModel.photos, indexPath.item)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -268,9 +292,7 @@ extension GalleryViewController: UICollectionViewDelegate {
         guard contentHeight > 0 else { return }
 
         if offsetY > contentHeight - frameHeight * Layout.paginationThresholdMultiplier {
-            Task {
-                await viewModel.loadNextPage()
-            }
+            viewModel.loadNextPage()
         }
     }
 }

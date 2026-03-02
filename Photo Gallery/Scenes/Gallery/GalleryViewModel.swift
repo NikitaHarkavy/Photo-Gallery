@@ -54,25 +54,49 @@ final class GalleryViewModel {
 
     // MARK: - Public Methods
 
-    func loadPhotos() async {
+    func loadPhotos() {
+        loadTask?.cancel()
+        loadTask = Task { await performLoadPhotos() }
+    }
+
+    func loadNextPage() {
+        guard loadNextPageTask == nil else { return }
+        loadNextPageTask = Task { await performLoadNextPage() }
+    }
+
+    // MARK: - Private Task Management
+
+    private var loadTask: Task<Void, Never>?
+    private var loadNextPageTask: Task<Void, Never>?
+
+    private func performLoadPhotos() async {
+        defer {
+            if !Task.isCancelled {
+                loadTask = nil
+            }
+        }
         switch state {
         case .idle, .error:
             photos = []
             currentPage = 1
             hasMorePages = false
             state = .loading
-            onStateChanged?()
+            await MainActor.run { onStateChanged?() }
             await fetchPhotos(page: 1)
         default:
             break
         }
     }
 
-    func loadNextPage() async {
-        guard !isLoadingNextPage, hasMorePages, !photos.isEmpty else { return }
+    private func performLoadNextPage() async {
+        guard !isLoadingNextPage, hasMorePages, !photos.isEmpty else {
+            loadNextPageTask = nil
+            return
+        }
         isLoadingNextPage = true
-        onStateChanged?()
+        await MainActor.run { onStateChanged?() }
         await fetchPhotos(page: currentPage)
+        loadNextPageTask = nil
     }
 
     var items: [GalleryItem] {
@@ -92,18 +116,22 @@ final class GalleryViewModel {
             let newPhotos: [UnsplashPhoto] = try await apiClient.request(
                 UnsplashEndpoint.listPhotos(page: page, perPage: perPage)
             )
-            photos.append(contentsOf: newPhotos)
-            currentPage = page + 1
-            hasMorePages = newPhotos.count == perPage
-            isLoadingNextPage = false
-            state = .loaded(items)
-            onStateChanged?()
-        } catch {
-            if photos.isEmpty {
-                state = .error(error.localizedDescription)
+            await MainActor.run {
+                photos.append(contentsOf: newPhotos)
+                currentPage = page + 1
+                hasMorePages = newPhotos.count == perPage
+                isLoadingNextPage = false
+                state = .loaded(items)
+                onStateChanged?()
             }
-            isLoadingNextPage = false
-            onStateChanged?()
+        } catch {
+            await MainActor.run {
+                if photos.isEmpty {
+                    state = .error(error.localizedDescription)
+                }
+                isLoadingNextPage = false
+                onStateChanged?()
+            }
         }
     }
 
