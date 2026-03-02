@@ -37,7 +37,7 @@ An iOS image gallery app that fetches photos from the Unsplash API, displays the
 | UIKit | Programmatic UI (no storyboards) |
 | URLSession | Async/await networking |
 | NSCache | Image caching |
-| UserDefaults | Favorites persistence |
+| Core Data | Favorites persistence |
 | Swift Testing | Unit tests |
 | SwiftLint | Code style |
 
